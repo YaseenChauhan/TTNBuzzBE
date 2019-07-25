@@ -1,43 +1,179 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
+const multer = require('multer');
 
-const buzzs = [
-    {id:1,type:'activity',createdDate : new Date()},
-    {id:2,type:'lost',createdDate : new Date()},
-    {id:3,type:'activity',createdDate : new Date()}
-]
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './uploads/')
+    },
+    filename: function (req, file, cb) {
+        // let today = new Date();
 
-router.get('/',(req,res,next) =>{
-    res.status(200).json({
-        message : "get working fine",
-        data : buzzs
-    })
-})
-router.post('/',(req,res,next) =>{
-    const buzz = {
-        id : req.body.id,
-        type : req.body.type,
-        createdDate : req.body.createdDate
+        // let dd = today.getDate();
+        // let mm = today.getMonth() + 1;
+        // let yyyy = today.getFullYear();
+
+        // if (dd < 10) {
+        //     dd = '0' + dd;
+        // }
+        // if (mm < 10) {
+        //     mm = '0' + mm;
+        // }
+        // let date = dd + '-' + mm + '-' + yyyy;
+
+        cb(null, new Date().toISOString() + file.originalname)
     }
-    buzzs.push(buzz);
-    console.log(buzzs);
-    res.status(201).json({
-        message : "post working fine"
-    })
+
 })
-router.get('/:buzzId',(req,res,next) =>{
+const fileFilter = function (req, file, cb) {
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+        cb(null, true);
+    }
+    else {
+        cb(new Error("Not supported"), false);
+    }
+}
+
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 1024 * 1024 * 5
+    },
+    fileFilter: fileFilter
+});
+
+const Buzz = require('../models/buzz');
+
+router.get('/', (req, res, next) => {
+    Buzz.find()
+        .exec()
+        .then(result => {
+            const response = {
+                count: result.length,
+                buzzs: result.map(buzz => {
+                    return {
+                        _id: buzz._id,
+                        name: buzz.name,
+                        email: buzz.email,
+                        isAdmin: buzz.isAdmin,
+                        buzzImage : buzz.buzzImage,
+                        request: {
+                            type: 'GET',
+                            url: 'http://localhost:3000/buzz/' + buzz._id
+                        }
+                    }
+                })
+            }
+            res.status(200).json(response);
+        })
+        .catch(err => {
+            res.status(500).json(err);
+        })
+})
+router.post('/', upload.single('buzzImage'), (req, res, next) => {
+    const buzz = new Buzz({
+        _id: mongoose.Types.ObjectId(),
+        name: req.body.name,
+        pass: req.body.password,
+        email: req.body.email,
+        isAdmin: req.body.isAdmin,
+        buzzImage : req.file.path
+    });
+    buzz.save().then(result => {
+        res.status(201).json({
+            message: "Data submitted successfully",
+            data: {
+                _id: result._id,
+                name: result.name,
+                email: result.email,
+                password: result.password,
+                isAdmin: result.isAdmin,
+                request: {
+                    type: 'POST',
+                    url: 'http://localhost:3000/buzz'
+                }
+            }
+        })
+
+    })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        })
+})
+router.get('/:buzzId', (req, res, next) => {
     const id = req.params.buzzId;
-    if(id === '123'){
-        res.status(200).json({
-            message : "successfully found!"
+    Buzz.findById(id)
+        .exec()
+        .then(result => {
+            if (result) {
+                res.status(201).json({
+                    message: "Data retrieved successfully",
+                    data: {
+                        _id: result._id,
+                        name: result.name,
+                        email: result.email,
+                        isAdmin: result.isAdmin,
+                        request: {
+                            type: 'GET',
+                            url: 'http://localhost:3000/buzz/'
+                        }
+                    }
+                })
+            } else {
+                res.status(404).json({
+                    message: "No record found for provided buzz id"
+                })
+            }
+
         })
-    }
-    else{
-         res.status(200).json({
-            message : "oops! not found"
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
         })
-        
-    }
-    
+})
+
+router.patch('/:buzzId', (req, res, next) => {
+    const id = req.params.buzzId;
+    const updatebuzz = req.body;
+    Buzz.update({ _id: id }, { $set: updatebuzz })
+        .exec()
+        .then(result => {
+            res.status(201).json({
+                message: "Data updated successfully",
+                request: {
+                    type: 'Patch',
+                    url: 'http://localhost:3000/buzz/' + id
+                }
+            })
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        })
+})
+
+router.delete('/:buzzId', (req, res, next) => {
+    const id = req.params.buzzId;
+    Buzz.remove({ _id: id })
+        .exec()
+        .then(result => {
+            res.status(201).json({
+                message: "Data deleted successfully",
+                request: {
+                    type: 'Delete',
+                    url: 'http://localhost:3000/buzz/'
+                }
+            })
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        })
 })
 module.exports = router;
