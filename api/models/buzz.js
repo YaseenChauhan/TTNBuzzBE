@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
+const  timestamps = require('mongoose-timestamp');
 
 const buzzSchema = mongoose.Schema({
-    _id : mongoose.Schema.Types.ObjectId,
-    name : {type: String,required : true},
-    pass: {type: String,required : true},
-    email : {type: String,required : true},  
-    isAdmin : Boolean,
-    buzzImage : String
+    buzzId : mongoose.Schema.Types.ObjectId,
+    category: String,
+    content: String,
+    postedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    
 })
 
 module.exports = mongoose.model('Buzz',buzzSchema);
