@@ -8,9 +8,17 @@ module.exports = {
     getAllBuzz: async (req, res, next) => {
         try {
             const user = await User.find().populate('buzzs');
-            console.log('user', user[0]);
             if (user) {
-                res.status(200).json(user);
+                const response = user.map(buzz => {
+                    return {
+                        username: buzz.username,
+                        buzzs: buzz.buzzs};
+                });
+                res.status(200).json({
+                    'data': response,
+                    success: true
+                    }
+                    );
             }
             else {
                 res.status(201).json({

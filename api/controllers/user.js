@@ -46,7 +46,7 @@ module.exports = {
 
     getUserById: async (req,res,next) => {
         try {
-            const users = await User.findById({_id: req.value.params.userId});
+            const users = await User.findById({_id: req.value.params.userId}).populate('buzzs');
             if (users) {
                 res.status(200).json({
                     data: users

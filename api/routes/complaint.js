@@ -1,22 +1,13 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/',(req,res,next) => {
-    res.status(200).json({
-        message : "complaints fetch successfully"
-    })
-})
+const authenticate = require('../../middleware/authenticate');
+const complaintController = require('../controllers/complaint');
 
-router.post('/',(req,res,next) => {
-    const complaint = {
-        id : req.body.id,
-        type : req.body.type,
-        createdDate : req.body.createdDate
-    }
-    res.status(200).json({
-        message : "complaints submitted successfully",
-        complaint : complaint
-    })
-})
+router.get('/',authenticate,complaintController.getAllComplaint);
+router.get('/:userId',authenticate,complaintController.getComplaint);
+router.post('/:userId',authenticate,complaintController.submitComplaint);
+router.patch('/:complaintId',authenticate,complaintController.modifyComplaint);
+router.put('/:complaintId',authenticate,complaintController.updateComplaint);
 
 module.exports = router;
