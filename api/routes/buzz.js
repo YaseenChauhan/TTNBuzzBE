@@ -6,11 +6,11 @@ const passportConf = require('../../passport');
 const authenticate = require('../../middleware/authenticate');
 const buzzController = require('../controllers/buzz');
 
-router.get('/',authenticate,buzzController.getAllBuzz);
-router.get('/:userId',authenticate,buzzController.getBuzz);
-router.post('/:userId/',authenticate,buzzController.createBuzz);
-router.patch('/:buzzId',authenticate,buzzController.modifyBuzz);
-router.put('/:buzzId',authenticate,buzzController.updateBuzz);
+router.get('/', authenticate, buzzController.getAllBuzz);
+router.get('/:userId', authenticate, buzzController.getBuzz);
+router.post('/:userId/', authenticate, buzzController.createBuzz);
+router.patch('/:buzzId', authenticate, buzzController.modifyBuzz);
+router.put('/:buzzId', authenticate, buzzController.updateBuzz);
 
 
 // router.post('/',passport.authenticate('jwt',{session: false}),buzzController.submitPost);

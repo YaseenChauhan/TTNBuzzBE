@@ -12,16 +12,17 @@ module.exports = {
                 const response = user.map(buzz => {
                     return {
                         username: buzz.username,
-                        buzzs: buzz.buzzs};
+                        buzzs: buzz.buzzs
+                    };
                 });
                 res.status(200).json({
                     'data': response,
                     success: true
-                    }
-                    );
+                }
+                );
             }
             else {
-                res.status(201).json({
+                res.status(404).json({
                     message: 'User does n\'t exist',
                     success: false
                 })
@@ -39,7 +40,7 @@ module.exports = {
                 res.status(200).json(user.buzzs);
             }
             else {
-                res.status(201).json({
+                res.status(404).json({
                     message: 'User does n\'t exist',
                     success: false
                 })
@@ -63,7 +64,7 @@ module.exports = {
 
             }
             else {
-                res.status(201).json({
+                res.status(404).json({
                     message: 'User does n\'t exist',
                     success: false
                 })
@@ -78,13 +79,11 @@ module.exports = {
             const { buzzId } = req.params;
             const buzz = req.body;
             const user = await Buzz.findByIdAndUpdate(buzzId, buzz);
-            console.log('modify', user)
             if (user) {
                 res.status(201).json(user);
-
             }
             else {
-                res.status(201).json({
+                res.status(404).json({
                     message: 'Buzz does n\'t exist',
                     success: false
                 })
@@ -106,7 +105,7 @@ module.exports = {
 
             }
             else {
-                res.status(201).json({
+                res.status(404).json({
                     message: 'Buzz does n\'t exist',
                     success: false
                 })
