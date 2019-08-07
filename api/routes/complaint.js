@@ -5,7 +5,7 @@ const authenticate = require('../../middleware/authenticate');
 const complaintController = require('../controllers/complaint');
 
 router.get('/', authenticate, complaintController.getAllComplaint);
-router.get('/:userId', authenticate, complaintController.getComplaint);
+router.get('/:userId', authenticate, complaintController.getComplaintByUserId);
 router.post('/:userId', authenticate, complaintController.submitComplaint);
 router.patch('/:complaintId', authenticate, complaintController.modifyComplaint);
 router.put('/:complaintId', authenticate, complaintController.updateComplaint);

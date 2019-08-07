@@ -32,7 +32,7 @@ module.exports = {
             res.status(500).json({ message: error });
         }
     },
-    getBuzz: async (req, res, next) => {
+    getBuzzByuserId: async (req, res, next) => {
         try {
             const { userId } = req.params;
             const user = await User.findById(userId).populate('buzzs');
@@ -99,7 +99,6 @@ module.exports = {
             const { buzzId } = req.params;
             const buzz = req.body;
             const user = await Buzz.findByIdAndUpdate(buzzId, buzz);
-            console.log(user)
             if (user) {
                 res.status(201).json(user);
 

@@ -3,7 +3,6 @@ const JOI = require('joi');
 module.exports = {
     validateParam: (schema,name) => {
         return (req,res,next) => {
-            console.log('user called')
             const result = JOI.validate({
                 param: req['params'][name]
             },schema);

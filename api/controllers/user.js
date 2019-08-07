@@ -7,8 +7,8 @@ signToken = (user) => {
     return JWT.sign({
         iss: 'Yaseen',
         sub: user.id,
-        iat: new Date().getTime(),
-        exp: new Date().setDate(new Date().getDate() + 1)
+        iat: Date.now() / 1000,
+        exp: Math.floor(Date.now() / 1000) + (60 * 60)
     }, JWT_SECRET)
 }
 
@@ -22,7 +22,7 @@ module.exports = {
 
     },
     getUser: async (req, res, next) => {
-        const users = await User.find();
+        const users = await User.find().populate('buzzs').populate('complaints');
         try {
             if (users) {
                 res.status(200).json({
@@ -46,7 +46,7 @@ module.exports = {
 
     getUserById: async (req,res,next) => {
         try {
-            const users = await User.findById({_id: req.value.params.userId}).populate('buzzs');
+            const users = await User.findById({_id: req.value.params.userId}).populate('buzzs').populate('complaints');
             if (users) {
                 res.status(200).json({
                     data: users

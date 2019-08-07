@@ -7,7 +7,7 @@ const authenticate = require('../../middleware/authenticate');
 const buzzController = require('../controllers/buzz');
 
 router.get('/', authenticate, buzzController.getAllBuzz);
-router.get('/:userId', authenticate, buzzController.getBuzz);
+router.get('/:userId', authenticate, buzzController.getBuzzByuserId);
 router.post('/:userId/', authenticate, buzzController.createBuzz);
 router.patch('/:buzzId', authenticate, buzzController.modifyBuzz);
 router.put('/:buzzId', authenticate, buzzController.updateBuzz);

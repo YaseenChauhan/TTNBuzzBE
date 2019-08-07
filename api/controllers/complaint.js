@@ -30,7 +30,7 @@ module.exports = {
             res.status(500).json({ message: error });
         }
     },
-    getComplaint: async (req, res, next) => {
+    getComplaintByUserId: async (req, res, next) => {
         try {
             const { userId } = req.params;
             const user = await User.findById(userId).populate('complaints');
@@ -73,7 +73,6 @@ module.exports = {
                 await newComplaint.save();
                 user.complaints.push(newComplaint);
                 await user.save();
-                console.log(user);
                 res.status(201).json(newComplaint);
             }
             else {
@@ -92,7 +91,6 @@ module.exports = {
             const { complaintId } = req.params;
             const complaint = req.body;
             const user = await Complaint.findByIdAndUpdate(complaintId, complaint);
-            console.log(user)
             if (user) {
                 res.status(201).json({
                     data: user,
@@ -139,8 +137,6 @@ module.exports = {
             if (complaint) {
                 const userId = complaint.userId;
                 const user = await User.findById(userId);
-                console.log('user', user);
-                console.log('complaint', complaint);
                 await complaint.remove();
 
                 user.complaints.pull(complaint);
