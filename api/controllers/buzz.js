@@ -7,19 +7,14 @@ const ObjectId = require('mongoose').ObjectID;
 module.exports = {
     getAllBuzz: async (req, res, next) => {
         try {
-            const user = await User.find().populate('buzzs');
-            if (user) {
-                const response = user.map(buzz => {
-                    return {
-                        username: buzz.username,
-                        buzzs: buzz.buzzs
-                    };
-                });
+            const buzz = await Buzz.find().populate('postedBy');
+            if (buzz) {
                 res.status(200).json({
-                    'data': response,
+                    buzz,
                     success: true
                 }
                 );
+                console.log(buzz);
             }
             else {
                 res.status(404).json({

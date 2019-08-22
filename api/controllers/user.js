@@ -15,7 +15,7 @@ signToken = (user) => {
 module.exports = {
     googleAuth: async (req, res, next) => {
         const token = signToken(req.user);
-        res.status(201).json({
+        res.status(200).json({
             message: req.authInfo.message,
             Token: token
         });
