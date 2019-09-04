@@ -5,12 +5,18 @@ const passport = require('passport');
 const passportConf = require('../../passport');
 const authenticate = require('../../middleware/authenticate');
 const buzzController = require('../controllers/buzz');
+const { storage, upload, fileFilter } = require('../../config/multre.config');
 
 router.get('/', authenticate, buzzController.getAllBuzz);
-router.get('/:userId', authenticate, buzzController.getBuzzByuserId);
-router.post('/:userId/', authenticate, buzzController.createBuzz);
+router.get('/user', authenticate, buzzController.getBuzzByUserId);
+router.post('/', authenticate, upload.single('buzzImage'), buzzController.createBuzz);
 router.patch('/:buzzId', authenticate, buzzController.modifyBuzz);
 router.put('/:buzzId', authenticate, buzzController.updateBuzz);
+router.post('/comment/:buzzId', authenticate, buzzController.createComment);
+router.get('/comment/:buzzId', authenticate, buzzController.getCommentById);
+router.get('/comment/', authenticate, buzzController.getComments);
+router.post('/like/:buzzId', authenticate, buzzController.likeBuzz);
+
 
 
 // router.post('/',passport.authenticate('jwt',{session: false}),buzzController.submitPost);

@@ -5,24 +5,18 @@ const User = require('../models/user');
 module.exports = {
     getAllComplaint: async (req, res, next) => {
         try {
-            const user = await User.find().populate('complaints');
-            if (user) {
-                const response = user.map(comp => {
-                    return {
-                        username: comp.username,
-                        complaints: comp.complaints
-                    };
-                });
+            const complaint = await Complaint.find().populate('submittedBy');
+            if (complaint) {
                 res.status(200).json({
-                    'data': response,
+                    complaint,
                     success: true
                 }
                 );
             }
             else {
                 res.status(404).json({
-                    message: 'User does n\'t exist',
-                    success: false
+                    message: 'no complaint submitted yet',
+                    success: true
                 })
             }
         }
@@ -32,11 +26,10 @@ module.exports = {
     },
     getComplaintByUserId: async (req, res, next) => {
         try {
-            const { userId } = req.params;
-            const user = await User.findById(userId).populate('complaints');
-            if (user) {
+            const complaint = await Complaint.find({submittedBy: req.user.id}).populate('submittedBy')
+            if (complaint) {
                 res.status(200).json({
-                    'data': user.complaints,
+                    'data': complaint,
                     success: true
                 }
                 );
@@ -54,8 +47,7 @@ module.exports = {
     },
     submitComplaint: async (req, res, next) => {
         try {
-            const { userId } = req.params;
-            const user = await User.findById(userId);
+            const user = await User.findById({_id: req.user.id});
             if (user) {
                 const dept = req.body.department;
                 const depts = await Department.findOne({ deptName: dept }).select('hod');
@@ -67,9 +59,9 @@ module.exports = {
                 const newComplaint = new Complaint({
                     ...req.body,
                     assignedTo: depts.hod,
-                    issueId: 'IG' + _issueId,
-                    userId
+                    issueId: 'IG' + _issueId
                 });
+                newComplaint.submittedBy = user;
                 await newComplaint.save();
                 user.complaints.push(newComplaint);
                 await user.save();
@@ -90,10 +82,10 @@ module.exports = {
         try {
             const { complaintId } = req.params;
             const complaint = req.body;
-            const user = await Complaint.findByIdAndUpdate(complaintId, complaint);
-            if (user) {
+            const updatedComplaint = await Complaint.findByIdAndUpdate(complaintId, complaint);
+            if (updatedComplaint) {
                 res.status(201).json({
-                    data: user,
+                    data: updatedComplaint,
                     success: true
                 })
             }

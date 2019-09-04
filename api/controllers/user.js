@@ -5,7 +5,7 @@ const User = require('../models/user');
 
 signToken = (user) => {
     return JWT.sign({
-        iss: 'Yaseen',
+        iss: 'user.username',
         sub: user.id,
         iat: Date.now() / 1000,
         exp: Math.floor(Date.now() / 1000) + (60 * 60)
@@ -13,11 +13,12 @@ signToken = (user) => {
 }
 
 module.exports = {
-    googleAuth: async (req, res, next) => {
+    googleAuth: (req, res, next) => {
         const token = signToken(req.user);
         res.status(200).json({
             message: req.authInfo.message,
-            Token: token
+            Token: token,
+            user: req.user
         });
 
     },
@@ -44,9 +45,9 @@ module.exports = {
 
     },
 
-    getUserById: async (req,res,next) => {
+    getUserById: async (req, res, next) => {
         try {
-            const users = await User.findById({_id: req.value.params.userId}).populate('buzzs').populate('complaints');
+            const users = await User.findById({ _id: req.value.params.userId }).populate('buzzs').populate('complaints');
             if (users) {
                 res.status(200).json({
                     data: users
@@ -60,6 +61,7 @@ module.exports = {
 
         }
         catch (error) {
+            console.log('error', error);
             res.status(500).json({
                 message: error
             });

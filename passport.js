@@ -35,6 +35,7 @@ passport.use('googleToken', new GooglePlusTokenStrategy({
                 done(null, newUser, { message: 'Successfully Loggedin' });
             }
         } catch (error) {
+            console.log('error', error);
             done(error, false, error.message);
         }
     }));
