@@ -38,6 +38,7 @@ module.exports = {
             }
         }
         catch (error) {
+            console.log(error);
             res.status(500).json({ message: error });
         }
     },
@@ -84,6 +85,7 @@ module.exports = {
             }
         }
         catch (error) {
+            console.log(error)
             res.status(500).json(error);
         }
     },
@@ -105,6 +107,7 @@ module.exports = {
             }
         }
         catch (error) {
+            console.log(error)
             res.status(500).json(error);
         }
     },
@@ -115,7 +118,15 @@ module.exports = {
             const buzz = await Buzz.findById(buzzId);
             if (buzz) {
                 buzz.likes = req.body.likes;
-                buzz.likedBy = userId;
+                if (!buzz.likedBy.includes(userId)) {
+                   buzz.likedBy = [...buzz.likedBy, userId];
+                }
+                else {
+                    const index = buzz.likedBy.indexOf(userId);
+                    buzz.likedBy.splice(index, 1);
+
+                   // buzz.likedBy = buzz.likedBy.filter((buzz, i) => (index !== i));
+                }
                 await buzz.save();
                 res.status(201).json(buzz);
             }
@@ -128,6 +139,7 @@ module.exports = {
 
         }
         catch (error) {
+            console.log(error)
             res.status(500).json(error);
         }
     },
@@ -160,11 +172,6 @@ module.exports = {
                         console.log(error)
                         res.status(500).json(error);
                     });
-
-
-                // buzz.comments.push(comment);
-                // await buzz.save();
-                // res.status(201).json(comment);
             }
             else {
                 res.status(404).json({
@@ -194,6 +201,7 @@ module.exports = {
             }
         }
         catch (error) {
+            console.log(error)
             res.status(500).json({ message: error });
         }
 
@@ -212,6 +220,7 @@ module.exports = {
             }
         }
         catch (error) {
+            console.log(error)
             res.status(500).json({ message: error });
         }
 

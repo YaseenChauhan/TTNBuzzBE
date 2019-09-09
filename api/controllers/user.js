@@ -47,15 +47,15 @@ module.exports = {
 
     getUserById: async (req, res, next) => {
         try {
-            const users = await User.findById({ _id: req.value.params.userId }).populate('buzzs').populate('complaints');
-            if (users) {
+            const user = await User.findById({ _id: req.user.id }).populate('buzzs').populate('complaints');
+            if (user) {
                 res.status(200).json({
-                    data: users
+                    data: user
                 });
             }
             else {
                 res.status(200).json({
-                    message: 'Data not found'
+                    message: 'user not found'
                 });
             }
 

@@ -6,8 +6,8 @@ const buzzSchema = mongoose.Schema({
     buzzContent: String,
     buzzImage: String,
     likes: { type: Number, default: 0 },
-    postedOn: { type: Date, default: new Date() },
-    likedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    postedOn: { type: Date, default: Date.now() },
+    likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     postedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }]
 
